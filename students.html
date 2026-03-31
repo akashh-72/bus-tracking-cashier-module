@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier | Students</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        if (localStorage.getItem('cashier_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+
+<body>
+    <div id="global-loader" class="loader-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <span class="brand-name">CASHIER</span>
+            </div>
+
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link">
+                            <i class="fas fa-grid-2"></i> <!-- Modern icon -->
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="students.html" class="nav-link active">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Students</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="fees.html" class="nav-link">
+                            <i class="fas fa-money-check-alt"></i>
+                            <span>Fees</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nav-menu" style="margin-top: 100px;">
+                    <li class="nav-item">
+                        <a href="login.html" class="nav-link" style="color: var(--accent-rose);">
+                            <i class="fas fa-power-off"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="page-title">
+                    <h1>Student Registry</h1>
+                    <p>View Students & Fee Assignments</p>
+                </div>
+                <!-- Profile -->
+                <div class="header-actions">
+                    <div class="admin-profile"
+                        style="display: flex; align-items: center; gap: 15px; background: white; padding: 8px 20px; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow-premium);">
+                        <div style="text-align: right;">
+                            <div id="cashier-name" style="font-weight: 800; font-size: 14px;">Cashier Profile</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700;">CASHIER
+                            </div>
+                        </div>
+                        <img id="cashier-avatar"
+                            src="https://ui-avatars.com/api/?name=Cashier&background=0F67FD&color=fff"
+                            style="width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--bg-light);">
+                    </div>
+                </div>
+            </header>
+
+            <div class="data-container fade-in">
+                <div class="data-header">
+                    <h2>Academic Enrollments</h2>
+                    <input type="text" class="search-bar" id="search-student" placeholder="Search by Enrollment ID...">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Enrollment ID</th>
+                            <th>Bus No</th>
+                            <th>Pickup Stop</th>
+                            <th>Fee Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-table-body"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal (View Only for Cashier) -->
+    <div id="student-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); z-index: 1000; place-items: center; padding: 20px;">
+        <div class="data-container fade-in" style="width: 100%; max-width: 500px; background: white;">
+            <div class="data-header">
+                <h2 id="modal-title" style="font-size: 24px; font-weight: 800;">Student Details</h2>
+                <button onclick="closeModal()"
+                    style="background: var(--bg-light); border: none; width: 40px; height: 40px; border-radius: 12px; color: var(--text-primary); cursor: pointer;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+
+            <div id="student-details-view" style="margin-top: 20px;">
+                <div
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; font-size: 14px;">
+                    <div><span style="color: var(--text-secondary);">Name:</span><br><strong id="v-name"></strong></div>
+                    <div><span style="color: var(--text-secondary);">Enrollment:</span><br><strong
+                            id="v-enroll"></strong></div>
+                    <div><span style="color: var(--text-secondary);">Phone:</span><br><strong id="v-phone"></strong>
+                    </div>
+                    <div><span style="color: var(--text-secondary);">Email:</span><br><strong id="v-email"></strong>
+                    </div>
+                    <div><span style="color: var(--text-secondary);">Bus No:</span><br><strong id="v-bus"></strong>
+                    </div>
+                    <div><span style="color: var(--text-secondary);">Pickup Stop:</span><br><strong
+                            id="v-stop"></strong></div>
+                    <div><span style="color: var(--text-secondary);">Monthly Fee Target:</span><br><strong
+                            id="v-fee-target">Calculating...</strong></div>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
+                <h3 style="font-size: 16px; margin-bottom: 15px;">Monthly Fee Status</h3>
+
+                <div id="monthly-fee-status"
+                    style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 200px; overflow-y: auto;">
+                    <!-- Months will be populated here via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/students.js"></script>
+    <script>
+        // Setup Cashier Profile UI
+        const cashierName = localStorage.getItem('cashier_name') || 'Cashier Profile';
+        document.getElementById('cashier-name').innerText = cashierName;
+        document.getElementById('cashier-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(cashierName)}&background=0F67FD&color=fff`;
+
+        function closeModal() { document.getElementById('student-modal').style.display = 'none'; }
+    </script>
+</body>
+
+</html>
